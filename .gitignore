@@ -1,0 +1,22 @@
+# Dependency directories
+**/node_modules/
+node_modules/
+
+# Next.js and build outputs
+**/.next/
+**/out/
+**/dist/
+**/build/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Environment variables files
+.env
+.env*.local
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
