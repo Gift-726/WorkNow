@@ -90,6 +90,9 @@ export const api = {
 
     login: (body: { email: string; password: string }) =>
       request<AuthData>('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
+
+    googleLogin: (credential: string) =>
+      request<AuthData>('/auth/google', { method: 'POST', body: JSON.stringify({ credential }) }),
   },
 
   users: {
@@ -118,6 +121,24 @@ export const api = {
 
     getById: (id: string) => request<Job>(`/jobs/${id}`),
 
+    create: (body: {
+      title: string;
+      description: string;
+      type: string;
+      location: string;
+      pay: number;
+      payPeriod: JobPayPeriod;
+      slotsAvailable: number;
+      estimatedDuration: string;
+    }) =>
+      request<Job>('/jobs', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+
+    listByEmployer: (employerId: string) =>
+      request<Job[]>(`/jobs?employerId=${employerId}`),
+
     apply: (jobId: string, message: string) =>
       request(`/jobs/${jobId}/apply`, {
         method: 'POST',
@@ -127,6 +148,14 @@ export const api = {
 
   applications: {
     mine: () => request<ApplicationsData>('/applications/mine'),
+    
+    listForEmployer: () => request<(Application & { worker: PublicUser | null })[]>('/applications/employer'),
+    
+    updateStatus: (id: string, status: 'ACCEPTED' | 'REJECTED') =>
+      request<Application>(`/applications/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status }),
+      }),
   },
 };
 

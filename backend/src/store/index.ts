@@ -150,8 +150,52 @@ class MockStore {
       createdAt: new Date().toISOString(),
     };
 
+    const mockWorker2: User = {
+      id: 'mock-worker-002',
+      fullName: 'Olujola Samuel',
+      email: 'samuel@worknow.com',
+      phone: '08011223344',
+      passwordHash: defaultPasswordHash,
+      role: 'WORKER',
+      verificationStatus: 'VERIFIED',
+      nin: '11112222333',
+      bvn: '11112222333',
+      nextOfKinName: 'Amara Samuel',
+      nextOfKinPhone: '08011111111',
+      createdAt: new Date().toISOString(),
+    };
+
     this.addUser(defaultEmployer);
     this.addUser(defaultWorker);
+    this.addUser(mockWorker2);
+
+    // Seed mock proposals
+    this.addApplication({
+      id: 'app-001',
+      jobId: 'job-001',
+      workerId: 'mock-worker-002',
+      message: "Hi Dave,\n\nI'm experienced, fit, and live near Lagos. Ready to start immediately. I'm experienced, fit, and live near Lagos. Ready to start immediately.\n\nI'm experienced, fit, and live near Lagos. Ready to start immediately. I'm experienced, fit, and live near Lagos. Ready to start immediately.\n\nI'm experienced, fit, and live near Lagos. Ready to start immediately. I'm experienced, fit, and live near Lagos. Ready to start immediately.\n\nBest regards,\nSamuel",
+      status: 'PENDING',
+      createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    });
+
+    this.addApplication({
+      id: 'app-002',
+      jobId: 'job-001',
+      workerId: 'mock-worker-001',
+      message: "Hi Funmi,\n\nI'm Tunde, a student at Unilag. I'm strong and have experience in venue setups. Available this Saturday and ready to work.",
+      status: 'PENDING',
+      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    });
+
+    this.addApplication({
+      id: 'app-003',
+      jobId: 'job-002',
+      workerId: 'mock-worker-002',
+      message: "Hi Funmi,\n\nI'm interested in the delivery loader role. I can carry heavy weights and load boxes quickly and safely. Available immediately.",
+      status: 'PENDING',
+      createdAt: new Date(Date.now() - 40 * 60 * 1000).toISOString(),
+    });
   }
 
 
@@ -223,6 +267,21 @@ class MockStore {
   getApplicationsByJob(jobId: string): Application[] {
     return Array.from(this.applications.values()).filter(
       (a) => a.jobId === jobId
+    );
+  }
+
+  getJobsByEmployer(employerId: string): Job[] {
+    return Array.from(this.jobs.values()).filter((j) => j.employerId === employerId);
+  }
+
+  getApplicationsForEmployer(employerId: string): Application[] {
+    const employerJobIds = new Set(
+      Array.from(this.jobs.values())
+        .filter((j) => j.employerId === employerId)
+        .map((j) => j.id)
+    );
+    return Array.from(this.applications.values()).filter((a) =>
+      employerJobIds.has(a.jobId)
     );
   }
 

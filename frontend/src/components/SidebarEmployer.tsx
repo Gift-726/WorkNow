@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 const navLinks = [
   {
-    href: '/worker',
+    href: '/employer',
     label: 'Dashboard',
     icon: (
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -18,17 +18,17 @@ const navLinks = [
     ),
   },
   {
-    href: '/worker/applications',
-    label: 'My Applications',
+    href: '/employer/jobs/new',
+    label: 'Create Job',
     icon: (
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M3 4.5A1.5 1.5 0 014.5 3h9A1.5 1.5 0 0115 4.5v9a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 013 13.5v-9z" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M6 7h6M6 10h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        <rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M9 5v8M5 9h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       </svg>
     ),
   },
   {
-    href: '/worker/wallet',
+    href: '/employer/wallet',
     label: 'Wallet',
     icon: (
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -39,7 +39,7 @@ const navLinks = [
     ),
   },
   {
-    href: '/worker/profile',
+    href: '/employer/profile',
     label: 'Profile',
     icon: (
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -50,12 +50,12 @@ const navLinks = [
   },
 ];
 
-export default function Sidebar() {
+export default function SidebarEmployer() {
   const pathname = usePathname();
   const router = useRouter();
 
   const isActive = (href: string) => {
-    if (href === '/worker') return pathname === '/worker';
+    if (href === '/employer') return pathname === '/employer';
     return pathname.startsWith(href);
   };
 
@@ -101,7 +101,7 @@ export default function Sidebar() {
       <div className="px-3 pb-6">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 w-full rounded-[10px] text-sm font-medium text-[#EF4444] hover:bg-red-50 transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 w-full rounded-[10px] text-sm font-medium text-[#EF4444] hover:bg-red-50 transition-colors cursor-pointer"
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M6.75 15.75H3.75a1.5 1.5 0 01-1.5-1.5V3.75a1.5 1.5 0 011.5-1.5h3" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round"/>

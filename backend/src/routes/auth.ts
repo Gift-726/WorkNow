@@ -4,9 +4,11 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { store } from '../store';
 import { ApiResponse, PublicUser, UserRole } from '../types';
+import { OAuth2Client } from 'google-auth-library';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'worknow-dev-secret-2026';
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Helper — strip sensitive fields for public response
 const toPublicUser = (user: ReturnType<typeof store.findById>): PublicUser | null => {
@@ -184,6 +186,73 @@ router.post('/login', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('[login]', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+// POST /api/v1/auth/google
+// Verifies Google JWT ID token, logs in or registers user
+router.post('/google', async (req: Request, res: Response) => {
+  try {
+    const { credential } = req.body as { credential?: string };
+
+    if (!credential) {
+      res.status(400).json({ success: false, message: 'Google credential token is required' });
+      return;
+    }
+
+    // Verify token with Google's API keys
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      res.status(400).json({ success: false, message: 'Invalid Google token payload' });
+      return;
+    }
+
+    const { email, name } = payload;
+
+    // Check if user already exists
+    let user = store.findByEmail(email);
+
+    if (!user) {
+      // Create user record (role defaults to WORKER, but they can select or edit it later)
+      const newUser = {
+        id: uuidv4(),
+        fullName: name || 'Google User',
+        email: email.toLowerCase().trim(),
+        phone: '', // Mock empty; user will update in profile
+        passwordHash: '', // Social logins don't require password hash
+        role: 'WORKER' as UserRole,
+        verificationStatus: 'UNVERIFIED' as const,
+        createdAt: new Date().toISOString(),
+      };
+      store.addUser(newUser);
+      user = newUser;
+    }
+
+    // Issue token
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    const response: ApiResponse<{ token: string; user: PublicUser }> = {
+      success: true,
+      message: 'Google login successful',
+      data: {
+        token,
+        user: toPublicUser(user)!,
+      },
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('[google-auth]', error);
+    res.status(401).json({ success: false, message: 'Google authentication failed' });
   }
 });
 

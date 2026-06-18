@@ -16,11 +16,11 @@ function timeAgo(isoString: string): string {
 }
 
 // GET /api/v1/jobs
-// Returns all OPEN jobs, supports ?search= and ?category= filters
+// Returns jobs, supports ?employerId=, ?search= and ?category= filters
 router.get('/', (_req: Request, res: Response) => {
-  const { search, category } = _req.query as { search?: string; category?: string };
+  const { search, category, employerId } = _req.query as { search?: string; category?: string; employerId?: string };
 
-  let jobs = store.getAllOpenJobs();
+  let jobs = employerId ? store.getJobsByEmployer(employerId) : store.getAllOpenJobs();
 
   if (search) {
     const q = search.toLowerCase();
