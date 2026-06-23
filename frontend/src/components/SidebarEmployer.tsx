@@ -69,7 +69,7 @@ export default function SidebarEmployer() {
     <aside className="w-[220px] min-h-screen border-r border-[#E5E7EB] bg-white flex flex-col shrink-0">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-[#E5E7EB] flex items-center">
-        <div className="relative w-[135px] h-[44px]">
+        <div className="relative w-[180px] h-[64px]">
           <Image src="/logo.png" alt="WorkNow" fill className="object-contain" priority />
         </div>
       </div>
